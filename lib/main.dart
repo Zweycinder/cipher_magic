@@ -1,23 +1,6 @@
 import 'package:cipher_magic/homescreen.dart';
 import 'package:flutter/material.dart';
 
-// reverse cipher
-// rail fence cipher
-// geometric figure cipher
-// columnar transposition cipher
-// double columnar transposition cipher
-// row transposition ciphers
-// nihilist transposition cipher
-// some algorith can have keys like this,  keys can be number of length, given number of columns like 1432, and word
-
-// caesar's cipher
-// direct standard
-// standard reverse
-// keyword cipher
-// multiplicative cipher
-// addine cipher
-// playfair cipher
-
 void main() {
   runApp(const CipherApp());
 }
