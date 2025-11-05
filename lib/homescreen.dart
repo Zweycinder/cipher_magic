@@ -7,6 +7,7 @@ import 'package:cipher_magic/rasberscreen.dart';
 import 'package:cipher_magic/widgets/my_textfeild.dart';
 import 'package:cipher_magic/widgets/mysnackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class CipherHomePage extends StatefulWidget {
   const CipherHomePage({super.key});
@@ -91,6 +92,13 @@ class _CipherHomePageState extends State<CipherHomePage> {
     return getKey2Hint().isNotEmpty;
   }
 
+  Future<void> _launchUrl() async {
+    String _url = 'https://linktr.ee/Mohammed.Abdulsalam';
+    if (!await launchUrl(Uri.parse(_url))) {
+      throw Exception('Could not launch $_url');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -173,12 +181,21 @@ class _CipherHomePageState extends State<CipherHomePage> {
                       ),
                       const SizedBox(height: 10),
                       const Text('Made by:'),
-                      const Text(
-                        'Mohammed Abdulsalam (Zwey)',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF2D3748),
+                      GestureDetector(
+                        onTap: () => _launchUrl(),
+                        child: Row(
+                          children: [
+                            const Text(
+                              'Mohammed Abdulsalam (Zwey)',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF2D3748),
+                              ),
+                            ),
+                            SizedBox(width: 10),
+                            Icon(Icons.link),
+                          ],
                         ),
                       ),
                       const SizedBox(height: 10),
