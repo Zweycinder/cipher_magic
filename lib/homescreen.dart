@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cipher_magic/cipher/algorithms/substitution.dart';
 import 'package:cipher_magic/cipher/algorithms/tansposition.dart';
 import 'package:cipher_magic/cipher/algorithms/top_secret_magic.dart';
@@ -19,6 +21,7 @@ class _CipherHomePageState extends State<CipherHomePage> {
   final TextEditingController inputController = TextEditingController();
   final TextEditingController outputController = TextEditingController();
   final TextEditingController keyController = TextEditingController();
+  final TextEditingController key2Controller = TextEditingController();
 
   final Map<String, List<String>> cipherTypes = {
     'Substitution': [
@@ -42,19 +45,50 @@ class _CipherHomePageState extends State<CipherHomePage> {
 
   String getKeyHint() {
     switch (selectedCipher) {
-      case 'Caesar Cipher':
+      case 'Caesar Cipher And Diract standerd':
         return 'Enter shift value (e.g., 3)';
+      case 'Keyword Cipher':
+        return 'Enter keyword (e.g., abyss)';
+      case 'Multiplicative Cipher':
+        return 'Enter GCD number (e.g., 1,3,5,7,9..)';
+      case 'Affine Cipher':
+        return 'Enter GCD number (e.g., 1,3,5,7,9..)';
       case 'Rail Fence Cipher':
         return 'Enter number of rails (e.g., 3)';
-      case 'Columnar Transposition':
-        return 'Enter key word (e.g., secret)';
+      case 'Columnar Cipher':
+        return 'key: e.g, 3, 2134, word';
+      case 'Double Columnar Cipher':
+        return 'key: e.g, 3, 2134, word';
+      case 'Row Cipher':
+        return 'key: e.g, 2134';
+      case 'Nihilist Cipher':
+        return 'Enter Word key: e.g word';
+      case 'FBI level secrets':
+        return 'Enter number Key: e.g 3';
       default:
-        return 'Key not required';
+        return '';
+    }
+  }
+
+  String getKey2Hint() {
+    switch (selectedCipher) {
+      case 'Keyword Cipher':
+        return 'Enter shift key (e.g., 3)';
+      case 'Affine Cipher':
+        return 'Enter shift key';
+      case 'Double Columnar Cipher':
+        return 'key: e.g, 3, 2134, word';
+      default:
+        return '';
     }
   }
 
   bool requiresKey() {
-    return !['Atbash Cipher', 'ROT13 Cipher'].contains(selectedCipher);
+    return getKeyHint().isNotEmpty;
+  }
+
+  bool requiresTwoKeys() {
+    return getKey2Hint().isNotEmpty;
   }
 
   @override
@@ -74,7 +108,6 @@ class _CipherHomePageState extends State<CipherHomePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
@@ -189,7 +222,6 @@ class _CipherHomePageState extends State<CipherHomePage> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Type Dropdown
                       Container(
                         decoration: BoxDecoration(
                           color: Colors.grey.shade50,
@@ -232,6 +264,8 @@ class _CipherHomePageState extends State<CipherHomePage> {
                                 selectedType = newValue!;
                                 selectedCipher = cipherTypes[selectedType]![0];
                                 outputController.clear();
+                                keyController.clear();
+                                key2Controller.clear();
                               });
                             },
                           ),
@@ -239,7 +273,6 @@ class _CipherHomePageState extends State<CipherHomePage> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Cipher Dropdown
                       Container(
                         decoration: BoxDecoration(
                           color: Colors.deepPurple.shade50,
@@ -272,6 +305,8 @@ class _CipherHomePageState extends State<CipherHomePage> {
                               setState(() {
                                 selectedCipher = newValue!;
                                 outputController.clear();
+                                keyController.clear();
+                                key2Controller.clear();
                               });
                             },
                           ),
@@ -282,7 +317,7 @@ class _CipherHomePageState extends State<CipherHomePage> {
                 ),
                 const SizedBox(height: 24),
 
-                // Key Input (conditional)
+                // First Key Field
                 if (requiresKey())
                   Container(
                     padding: const EdgeInsets.all(24),
@@ -308,9 +343,9 @@ class _CipherHomePageState extends State<CipherHomePage> {
                               size: 20,
                             ),
                             const SizedBox(width: 8),
-                            const Text(
-                              'Key',
-                              style: TextStyle(
+                            Text(
+                              requiresTwoKeys() ? 'Key 1' : 'Key',
+                              style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                                 color: Color(0xFF2D3748),
@@ -337,7 +372,61 @@ class _CipherHomePageState extends State<CipherHomePage> {
                   ),
                 if (requiresKey()) const SizedBox(height: 24),
 
-                // Input Field
+                // Second Key Field
+                if (requiresTwoKeys())
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.vpn_key,
+                              color: Colors.deepPurple.shade700,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            const Text(
+                              'Key 2',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF2D3748),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        TextField(
+                          controller: key2Controller,
+                          decoration: InputDecoration(
+                            hintText: getKey2Hint(),
+                            filled: true,
+                            fillColor: Colors.grey.shade50,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                            contentPadding: const EdgeInsets.all(16),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                if (requiresTwoKeys()) const SizedBox(height: 24),
+
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
@@ -392,11 +481,6 @@ class _CipherHomePageState extends State<CipherHomePage> {
                 ),
                 const SizedBox(height: 20),
 
-                // encypt or decrypt button
-                //
-                //
-                //
-                //
                 Row(
                   children: [
                     Expanded(
@@ -459,11 +543,7 @@ class _CipherHomePageState extends State<CipherHomePage> {
                   ],
                 ),
                 const SizedBox(height: 20),
-                // OUTPUT FEILD
-                //
-                //
-                //
-                //
+
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
@@ -524,14 +604,18 @@ class _CipherHomePageState extends State<CipherHomePage> {
       case 'Caesar Cipher And Diract standerd':
         output = Substitution().caesarEncrypt(input, keyController.text);
         break;
-      case 'Standard Reverse':
+      case 'Standard Reverse Cipher':
         output = Substitution().standardReverseEncrypt(
           input,
           keyController.text,
         );
         break;
       case 'Keyword Cipher':
-        output = Substitution().keywordEncrypt(input, keyController.text, '');
+        output = Substitution().keywordEncrypt(
+          input,
+          keyController.text,
+          key2Controller.text,
+        );
         break;
       case 'Multiplicative Cipher':
         output = Substitution().multiplicativeEncrypt(
@@ -540,13 +624,16 @@ class _CipherHomePageState extends State<CipherHomePage> {
         );
         break;
       case 'Affine Cipher':
-        output = Substitution().affineEncrypt(input, keyController.text, '');
+        output = Substitution().affineEncrypt(
+          input,
+          keyController.text,
+          key2Controller.text,
+        );
         break;
       case 'Playfair Cipher':
         output = Substitution().playfairEncrypt(input, keyController.text);
         break;
 
-      ////////////////////////////////////////////////////////
       case 'Reverse Cipher':
         output = Transposition().reverseEncryptDecrypt(input);
         break;
@@ -560,7 +647,7 @@ class _CipherHomePageState extends State<CipherHomePage> {
         output = Transposition().doubleColumnarEncrypt(
           input,
           keyController.text,
-          '',
+          key2Controller.text,
         );
         break;
       case 'Row Cipher':
@@ -569,7 +656,7 @@ class _CipherHomePageState extends State<CipherHomePage> {
       case 'Nihilist Cipher':
         output = Transposition().nihilistEncrypt(input, keyController.text);
         break;
-      //////////////////////////////////////////////
+
       case 'FBI level secrets':
         output = TopSecretMagic().encryptToEmojis(input, keyController.text);
         break;
@@ -593,14 +680,18 @@ class _CipherHomePageState extends State<CipherHomePage> {
       case 'Caesar Cipher And Diract standerd':
         output = Substitution().caesarDecrypt(input, keyController.text);
         break;
-      case 'Standard Reverse':
+      case 'Standard Reverse Cipher':
         output = Substitution().standardReverseDecrypt(
           input,
           keyController.text,
         );
         break;
       case 'Keyword Cipher':
-        output = Substitution().keywordDecrypt(input, keyController.text, '');
+        output = Substitution().keywordDecrypt(
+          input,
+          keyController.text,
+          key2Controller.text,
+        );
         break;
       case 'Multiplicative Cipher':
         output = Substitution().multiplicativeDecrypt(
@@ -609,13 +700,16 @@ class _CipherHomePageState extends State<CipherHomePage> {
         );
         break;
       case 'Affine Cipher':
-        output = Substitution().affineDecrypt(input, keyController.text, '');
+        output = Substitution().affineDecrypt(
+          input,
+          keyController.text,
+          key2Controller.text,
+        );
         break;
       case 'Playfair Cipher':
         output = Substitution().playfairDecrypt(input, keyController.text);
         break;
 
-      /////////////////////////////////////////////////
       case 'Reverse Cipher':
         output = Transposition().reverseEncryptDecrypt(input);
         break;
@@ -624,19 +718,21 @@ class _CipherHomePageState extends State<CipherHomePage> {
         break;
       case 'Columnar Cipher':
         output = Transposition().columnarDecrypt(input, keyController.text);
+        break;
       case 'Double Columnar Cipher':
         output = Transposition().doubleColumnarDecrypt(
           input,
           keyController.text,
-          '',
+          key2Controller.text,
         );
+        break;
       case 'Row Cipher':
         output = Transposition().rowDecrypt(input, keyController.text);
         break;
       case 'Nihilist Cipher':
         output = Transposition().nihilistDecrypt(input, keyController.text);
         break;
-      ///////////////////////////////////////////////
+
       case 'FBI level secrets':
         output = TopSecretMagic().decryptFromEmojis(input, keyController.text);
         break;

@@ -255,18 +255,19 @@ class TopSecretMagic {
   static const String charset = 'abcdefghijklmnopqrstuvwxyz';
 
   String encryptToEmojis(String input, String keyString) {
+    String inputLowCase = input.toLowerCase();
+    inputLowCase = inputLowCase.replaceAll(' ', '');
     int key = int.parse(keyString);
     String result = '';
 
-    for (int i = 0; i < input.length; i++) {
-      String char = input[i];
+    for (int i = 0; i < inputLowCase.length; i++) {
+      String char = inputLowCase[i];
       int charIndex = charset.indexOf(char);
 
       if (charIndex == -1) {
         continue;
       }
 
-      // Use charset.length for consistency
       int shiftedIndex = (charIndex + key) % charset.length;
       result += emojiPool[shiftedIndex];
     }
@@ -287,7 +288,6 @@ class TopSecretMagic {
         continue;
       }
 
-      // Now matches encryption
       int originalIndex = (emojiIndex - key) % charset.length;
       if (originalIndex < 0) originalIndex += charset.length;
 

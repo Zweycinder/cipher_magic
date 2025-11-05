@@ -6,8 +6,11 @@ class Rasberscreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: Center(child: Image.asset('assets/drrasper.png')),
+      appBar: AppBar(title: Text('Ascii art of Doctor Rasper')),
+      body: Align(
+        alignment: AlignmentGeometry.topCenter,
+        child: Image.asset('assets/drrasper.png'),
+      ),
     );
   }
 }
